@@ -56,7 +56,7 @@ class Server {
             while (true) {
 
                 // Serve up a socket for the visualizer
-                printf("%s server listening for client... ", server->name);
+                printf("%s server listening for client...\n", server->name);
                 fflush(stdout);
 
                 server->socket.acceptClient();
