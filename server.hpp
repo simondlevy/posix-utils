@@ -18,14 +18,8 @@
 
 #pragma once
 
-#include <stdio.h>
 #include <pthread.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
 #include <string.h>
-#include <unistd.h>
-#include <signal.h>
 
 #include "socket.hpp"
 
