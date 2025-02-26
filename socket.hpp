@@ -59,6 +59,13 @@ class ServerSocket {
             listen(sockfd, 1);
         }
 
+        void acceptClient()
+        {
+            clientfd = accept(sockfd, (struct sockaddr*)NULL, NULL);
+
+            connected = true;
+        }
+
         void sendData(const uint8_t * data, const size_t size)
         {
             connected = connected && 
