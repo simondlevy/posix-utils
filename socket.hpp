@@ -53,6 +53,8 @@ class ServerSocket {
             bind(sockfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
 
             listen(sockfd, 1);
+
+            connected = false;
         }
 
         void acceptClient()
