@@ -27,7 +27,7 @@ class Server {
 
     public:
 
-        void init(const uint16_t port, const char * name="")
+        Server(const uint16_t port, const char * name="")
         {
             strcpy(this->name, name);
 
