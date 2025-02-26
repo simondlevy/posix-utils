@@ -31,10 +31,8 @@ class ServerSocket {
 
     public:
 
-        void open(const uint16_t port, const char * name="")
+        void open(const uint16_t port)
         {
-            strcpy(this->name, name);
-
             signal(SIGPIPE, sigpipe_handler);
 
             sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -72,9 +70,12 @@ class ServerSocket {
                 (write(clientfd, data, size) == (ssize_t)size);
         }
 
-    private:
+        bool isConnected()
+        {
+            return connected;
+        }
 
-        char name[256];
+    private:
 
         bool connected;
 

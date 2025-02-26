@@ -27,6 +27,8 @@
 #include <unistd.h>
 #include <signal.h>
 
+#include "socket.hpp"
+
 class Server {
 
     public:
@@ -35,36 +37,14 @@ class Server {
         {
             strcpy(this->name, name);
 
-            signal(SIGPIPE, sigpipe_handler);
-
-            sockfd = socket(AF_INET, SOCK_STREAM, 0);
-
-            const int reuse = 1;
-            if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &reuse,
-                        sizeof(int)) < 0) {
-                fprintf(stderr, "setsockopt(SO_REUSEADDR) failed");
-                exit(1);
-            }
-
-            struct sockaddr_in serv_addr = {};
-
-            serv_addr.sin_family = AF_INET;
-
-            serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-
-            serv_addr.sin_port = htons(port);
-
-            bind(sockfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
-
-            listen(sockfd, 1);
+            socket.open(port);
 
             pthread_create(&thread, NULL, thread_fun, this);
         }
 
         void sendData(const uint8_t * data, const size_t size)
         {
-            connected = connected && 
-                (write(clientfd, data, size) == (ssize_t)size);
+            socket.sendData(data, size);
         }
 
     private:
@@ -73,11 +53,7 @@ class Server {
 
         pthread_t thread;
 
-        bool connected;
-
-        int sockfd;
-
-        int clientfd;
+        ServerSocket socket;
 
         static void * thread_fun(void * arg)
         {
@@ -89,23 +65,15 @@ class Server {
                 printf("%s server listening for client... ", server->name);
                 fflush(stdout);
 
-                server->clientfd =
-                    accept(server->sockfd, (struct sockaddr*)NULL, NULL);
+                server->socket.acceptClient();
 
                 printf("%s client connected\n", server->name);
 
-                server->connected = true;
-
-                while (server->connected) {
+                while (server->socket.isConnected()) {
                     usleep(1000); // yield
                 }
             }
 
             return NULL;
-        }
-
-        static void sigpipe_handler(int arg)
-        {
-            (void)arg;
         }
 };
