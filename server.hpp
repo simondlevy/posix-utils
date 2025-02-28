@@ -27,9 +27,13 @@ class Server {
 
     public:
 
-        Server(const uint16_t port)
+        Server(const uint16_t port, bool bluetooth=false)
         {
-            socket.open(port);
+            if (bluetooth) {
+            }
+            else {
+                socket.open(port);
+            }
 
             this->port = port;
 
