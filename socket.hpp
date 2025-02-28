@@ -43,6 +43,18 @@ class ServerSocket {
             init((struct sockaddr*)&serv_addr, sizeof(serv_addr));
         }
 
+        void btopen(const uint16_t port)
+        {
+            sockfd = socket(AF_BLUETOOTH, SOCK_STREAM, BTPROTO_RFCOMM);
+
+            struct sockaddr_rc serv_addr = {};
+            serv_addr.rc_family = AF_BLUETOOTH;
+            serv_addr.rc_bdaddr = {0, 0, 0, 0, 0, 0};
+            serv_addr.rc_channel = (uint8_t)port;
+
+            init((struct sockaddr*)&serv_addr, sizeof(serv_addr));
+        }
+
         void acceptClient()
         {
             clientfd = accept(sockfd, (struct sockaddr*)NULL, NULL);

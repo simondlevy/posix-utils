@@ -30,6 +30,7 @@ class Server {
         Server(const uint16_t port, bool bluetooth=false)
         {
             if (bluetooth) {
+                socket.btopen(port);
             }
             else {
                 socket.open(port);
