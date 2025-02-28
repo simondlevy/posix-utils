@@ -40,20 +40,7 @@ class ServerSocket {
             serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
             serv_addr.sin_port = htons(port);
 
-            const int reuse = 1;
-            if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &reuse,
-                        sizeof(int)) < 0) {
-                fprintf(stderr, "setsockopt(SO_REUSEADDR) failed");
-                return;
-            }
-
-            signal(SIGPIPE, sigpipe_handler);
-
-            bind(sockfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
-
-            listen(sockfd, 1);
-
-            connected = false;
+            init((struct sockaddr*)&serv_addr, sizeof(serv_addr));
         }
 
         void acceptClient()
@@ -81,6 +68,24 @@ class ServerSocket {
         int sockfd;
 
         int clientfd;
+
+        void init(struct sockaddr * addr, size_t addr_size)
+        {
+            const int reuse = 1;
+            if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &reuse,
+                        sizeof(int)) < 0) {
+                fprintf(stderr, "setsockopt(SO_REUSEADDR) failed");
+                return;
+            }
+
+            signal(SIGPIPE, sigpipe_handler);
+
+            bind(sockfd, addr, addr_size);
+
+            listen(sockfd, 1);
+
+            connected = false;
+        }
 
         static void sigpipe_handler(int arg)
         {
