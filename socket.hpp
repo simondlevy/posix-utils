@@ -1,5 +1,5 @@
 /*
-   Socket class for servers
+   Socket class for servers, including Bluetooth
 
    Copyright (C) 2025 Simon D. Levy
 
@@ -24,6 +24,8 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <signal.h>
+#include <bluetooth/bluetooth.h>
+#include <bluetooth/rfcomm.h>
 
 class ServerSocket {
 
@@ -31,24 +33,21 @@ class ServerSocket {
 
         void open(const uint16_t port)
         {
-            signal(SIGPIPE, sigpipe_handler);
-
             sockfd = socket(AF_INET, SOCK_STREAM, 0);
+
+            struct sockaddr_in serv_addr = {};
+            serv_addr.sin_family = AF_INET;
+            serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+            serv_addr.sin_port = htons(port);
 
             const int reuse = 1;
             if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &reuse,
                         sizeof(int)) < 0) {
                 fprintf(stderr, "setsockopt(SO_REUSEADDR) failed");
-                exit(1);
+                return;
             }
 
-            struct sockaddr_in serv_addr = {};
-
-            serv_addr.sin_family = AF_INET;
-
-            serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-
-            serv_addr.sin_port = htons(port);
+            signal(SIGPIPE, sigpipe_handler);
 
             bind(sockfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
 
