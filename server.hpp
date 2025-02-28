@@ -27,11 +27,11 @@ class Server {
 
     public:
 
-        Server(const uint16_t port, const char * name="")
+        Server(const uint16_t port)
         {
-            strcpy(this->name, name);
-
             socket.open(port);
+
+            this->port = port;
 
             pthread_create(&thread, NULL, thread_fun, this);
         }
@@ -43,7 +43,7 @@ class Server {
 
     private:
 
-        char name[256];
+        int port;
 
         pthread_t thread;
 
@@ -56,12 +56,12 @@ class Server {
             while (true) {
 
                 // Serve up a socket for the visualizer
-                printf("%s server listening for client...\n", server->name);
+                printf("listening for client on port %d...\n", server->port);
                 fflush(stdout);
 
                 server->socket.acceptClient();
 
-                printf("%s client connected\n", server->name);
+                printf("client connected on port %d\n", server->port);
 
                 while (server->socket.isConnected()) {
                     usleep(1000); // yield
