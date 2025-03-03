@@ -57,3 +57,12 @@ static int openSerialPort(const char* portname, int speed)
 
     return fd;
 }
+
+static int serial_available(const int fd)
+{
+    int avail = 0;
+
+    ioctl(fd, FIONREAD, &avail);
+
+    return avail;
+}
